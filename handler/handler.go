@@ -12,20 +12,20 @@ import (
 	"time"
 )
 
-// UploadHandler 处理文件上传
-func UploadHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
-		// 返回上传html页面
-		data, err := ioutil.ReadFile("./static/view/upload.html")
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("StatusInternalServerError"))
-			return
-		}
-		w.WriteHeader(http.StatusOK)
-		w.Write(data)
+// HomeHandler 处理主页
+func HomeHandler(w http.ResponseWriter, r *http.Request) {
+	data, err := ioutil.ReadFile("./static/view/index.html")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("StatusInternalServerError"))
 		return
 	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
+// UploadHandler 处理文件上传
+func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		// 接受文件流及存储到本地目录
 		file, head, err := r.FormFile("file")
@@ -75,23 +75,11 @@ func UploadSucHandler(w http.ResponseWriter, r *http.Request) {
 
 // GetFileMetaHandler 处理查询文件元信息
 func GetFileMetaHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
-		// 返回上传html页面
-		data, err := ioutil.ReadFile("./static/view/meta.html")
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("StatusInternalServerError"))
-			return
-		}
-		w.WriteHeader(http.StatusOK)
-		w.Write(data)
-		return
-	}
 	if r.Method == http.MethodPost {
 		r.ParseForm()
 
-		// fileHash := r.Form["filehash"][0]
-		fileHash := r.PostForm["filehash"][0]
+		fileHash := r.Form["filehash"][0]
+		// fileHash := r.PostForm["filehash"][0]
 		// fileHash := r.PostFormValue("filehash")
 		fileMeta := meta.GetFileMeta(fileHash)
 		if fileMeta.FileSize <= 0 {
@@ -112,18 +100,6 @@ func GetFileMetaHandler(w http.ResponseWriter, r *http.Request) {
 
 // DownloadHandler 处理下载文件
 func DownloadHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
-		// 返回上传html页面
-		data, err := ioutil.ReadFile("./static/view/download.html")
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("StatusInternalServerError"))
-			return
-		}
-		w.WriteHeader(http.StatusOK)
-		w.Write(data)
-		return
-	}
 	if r.Method == http.MethodPost {
 		r.ParseForm()
 		fileSha1 := r.Form.Get("filehash")
