@@ -109,3 +109,43 @@ func GetFileMetaHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write(data)
 	}
 }
+
+// DownloadHandler 处理下载文件
+func DownloadHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		// 返回上传html页面
+		data, err := ioutil.ReadFile("./static/view/download.html")
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("StatusInternalServerError"))
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write(data)
+		return
+	}
+	if r.Method == http.MethodPost {
+		r.ParseForm()
+		fileSha1 := r.Form.Get("filehash")
+		fileMeta := meta.GetFileMeta(fileSha1)
+
+		file, err := os.Open(fileMeta.Location)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("StatusInternalServerError"))
+			return
+		}
+		defer file.Close()
+
+		data, err := ioutil.ReadAll(file)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("StatusInternalServerError"))
+			return
+		}
+		w.Header().Set("Content-Type", "application/octect-stream")
+		w.Header().Set("Content-Disposition", "attachment;filename=\""+fileMeta.FileName+"\"")
+		w.WriteHeader(http.StatusOK)
+		w.Write(data)
+	}
+}
