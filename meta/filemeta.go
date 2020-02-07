@@ -20,7 +20,12 @@ func UpdateFileMeta(fileMeta FileMeta) {
 	fileMetas[fileMeta.FileSha1] = fileMeta
 }
 
-// GetFileMeta 获取文件元数据
+// GetFileMeta 获取文件元信息
 func GetFileMeta(fileSha1 string) FileMeta {
 	return fileMetas[fileSha1]
+}
+
+// RemoveFileMeta 删除文件元信息
+func RemoveFileMeta(fileSha1 string) {
+	delete(fileMetas, fileSha1)
 }
