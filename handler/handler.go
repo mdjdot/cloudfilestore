@@ -60,7 +60,8 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 
 		newFile.Seek(0, 0)
 		fileMeta.FileSha1 = util.FileSha1(newFile)
-		meta.UpdateFileMeta(fileMeta)
+		// meta.UpdateFileMeta(fileMeta)
+		meta.UpdateFileMetaDB(fileMeta)
 
 		// w.WriteHeader(http.StatusOK)
 		// w.Write([]byte("upload finished"))
@@ -81,7 +82,8 @@ func GetFileMetaHandler(w http.ResponseWriter, r *http.Request) {
 		fileHash := r.Form["filehash"][0]
 		// fileHash := r.PostForm["filehash"][0]
 		// fileHash := r.PostFormValue("filehash")
-		fileMeta := meta.GetFileMeta(fileHash)
+		// fileMeta := meta.GetFileMeta(fileHash)
+		fileMeta := meta.GetFileMetaDB(fileHash)
 		if fileMeta.FileSize <= 0 {
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte("文件未找到"))
@@ -103,7 +105,8 @@ func DownloadHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		r.ParseForm()
 		fileSha1 := r.Form.Get("filehash")
-		fileMeta := meta.GetFileMeta(fileSha1)
+		// fileMeta := meta.GetFileMeta(fileSha1)
+		fileMeta := meta.GetFileMetaDB(fileSha1)
 
 		file, err := os.Open(fileMeta.Location)
 		if err != nil {
@@ -140,7 +143,8 @@ func FileMetaUpdateHandler(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("StatusForbidden"))
 			return
 		}
-		fileMeta := meta.GetFileMeta(fileSha1)
+		// fileMeta := meta.GetFileMeta(fileSha1)
+		fileMeta := meta.GetFileMetaDB(fileSha1)
 		fileMeta.FileName = newFileNam
 		meta.UpdateFileMeta(fileMeta)
 
@@ -162,7 +166,8 @@ func FileDeleteHandler(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
 		fileSha1 := r.FormValue("filehash")
 		if len(fileSha1) > 0 {
-			fileMeta := meta.GetFileMeta(fileSha1)
+			// fileMeta := meta.GetFileMeta(fileSha1)
+			fileMeta := meta.GetFileMetaDB(fileSha1)
 			if fileMeta.FileSize > 0 {
 				meta.RemoveFileMeta(fileSha1)
 				os.Remove(fileMeta.Location)
